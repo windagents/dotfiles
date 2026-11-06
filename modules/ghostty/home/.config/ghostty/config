@@ -1,0 +1,42 @@
+# Mirror ~/.config/kitty/kitty.conf and dank-theme.conf.
+background = #121414
+foreground = #e3e2e2
+background-opacity = 0.8
+cursor-color = #e3e2e2
+cursor-text = #c7c6c6
+selection-foreground = #293232
+selection-background = #bec8c8
+
+palette = 0=#121414
+palette = 1=#e89668
+palette = 2=#65ca6d
+palette = 3=#fcf271
+palette = 4=#abbfbf
+palette = 5=#4e5d5d
+palette = 6=#b8caca
+palette = 7=#c7d4d4
+palette = 8=#798383
+palette = 9=#ffc19f
+palette = 10=#9df2a4
+palette = 11=#fff8a5
+palette = 12=#cddede
+palette = 13=#efffff
+palette = 14=#f4ffff
+palette = 15=#f8ffff
+
+font-family = "JetBrains Maple Mono"
+font-size = 13.5
+window-padding-x = 5
+window-padding-y = 5
+window-decoration = none
+command = fish
+cursor-style = block
+# Keep Ghostty's shell integration from changing the block cursor to a bar.
+shell-integration-features = no-cursor
+
+# Cursor trail: Ghostty 1.4 has no native `cursor_trail`, so use a shader that
+# mimics kitty's decay-based corner easing (see the header of the shader for
+# the kitty-option -> constant mapping). Alternatives in shaders/ghostty/:
+# cursor_tail.glsl (snappier comet), cursor_sweep.glsl, cursor_warp.glsl.
+# Sources: sahaj-b/ghostty-cursor-shaders + kitty's kitty/cursor_trail.c
+custom-shader = shaders/kitty-parity.glsl

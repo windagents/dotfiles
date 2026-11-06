@@ -9,13 +9,17 @@ APT_UPDATED=0
 BREW_UPDATED=0
 
 # 单包是否已安装 (逐包查询, 避免管道 SIGPIPE + pipefail 误判)
+# darwin 支持 "cask:" 前缀 (Homebrew Cask, 如 cask:ghostty)
 is_installed() { # is_installed <包名>
     case "$DISTRO_ID" in
         arch)
             pacman -Q "$1" >/dev/null 2>&1
             ;;
         darwin)
-            brew list --formula "$1" >/dev/null 2>&1
+            case "$1" in
+                cask:*) brew list --cask "${1#cask:}" >/dev/null 2>&1 ;;
+                *)      brew list --formula "$1" >/dev/null 2>&1 ;;
+            esac
             ;;
         *)
             dpkg-query -s "$1" >/dev/null 2>&1
@@ -115,7 +119,19 @@ pkg_install() { # pkg_install <包名...>
                 brew update
                 BREW_UPDATED=1
             fi
-            brew install "${missing[@]}"
+            local formulas=() casks=() p
+            for p in "${missing[@]}"; do
+                case "$p" in
+                    cask:*) casks+=("${p#cask:}") ;;
+                    *)      formulas+=("$p") ;;
+                esac
+            done
+            if [ "${#formulas[@]}" -gt 0 ]; then
+                brew install "${formulas[@]}"
+            fi
+            if [ "${#casks[@]}" -gt 0 ]; then
+                brew install --cask "${casks[@]}"
+            fi
             ;;
         *)
             if [ "$APT_UPDATED" -eq 0 ]; then
@@ -274,7 +290,21 @@ pkg_remove() { # pkg_remove <包名...>
     [ -n "$DRY_RUN" ] && return 0
     case "$DISTRO_ID" in
         arch) sudo pacman -Rns --noconfirm "${installed[@]}" ;;
-        darwin) brew uninstall "${installed[@]}" ;;
+        darwin)
+            local formulas=() casks=() p
+            for p in "${installed[@]}"; do
+                case "$p" in
+                    cask:*) casks+=("${p#cask:}") ;;
+                    *)      formulas+=("$p") ;;
+                esac
+            done
+            if [ "${#formulas[@]}" -gt 0 ]; then
+                brew uninstall "${formulas[@]}"
+            fi
+            if [ "${#casks[@]}" -gt 0 ]; then
+                brew uninstall --cask "${casks[@]}"
+            fi
+            ;;
         *) sudo apt-get remove -y "${installed[@]}" ;;
     esac
 }

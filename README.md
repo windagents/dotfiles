@@ -1,6 +1,6 @@
 # dotfiles — 跨发行版一键安装 (Ubuntu / Arch / macOS)
 
-个人 shell 与终端工具配置仓库：fish / zsh / starship / tmux / yazi / fzf / LazyVim，支持动态扩充。
+个人 shell 与终端工具配置仓库：fish / zsh / starship / tmux / yazi / fzf / ghostty / LazyVim，支持动态扩充。
 
 ## 快速开始
 
@@ -8,7 +8,7 @@
 # 一键安装（交互式选模块，或全装）
 ./install.sh          # 交互式菜单
 ./install.sh -y       # 安装全部模块
-./install.sh fish zsh tmux yazi fzf lazyvim   # 只装指定模块
+./install.sh fish zsh tmux yazi fzf ghostty lazyvim   # 只装指定模块
 ./install.sh --dry-run                     # 预览，不做任何修改
 
 # 覆盖/同步本机配置为仓库内容（清理仓库里已删除的旧文件）
@@ -55,6 +55,7 @@ dotfiles/
 │   ├── tmux/           tmux + tpm 插件
 │   ├── yazi/           yazi 文件管理器
 │   ├── fzf/            fzf + 配套工具（纯包模块）
+│   ├── ghostty/        Ghostty 终端（主题 + 光标拖尾 shader）
 │   └── lazyvim/        LazyVim 配置 (部署为 ~/.config/lazyvim)
 ```
 
@@ -65,7 +66,7 @@ dotfiles/
 | 文件                                    | 作用                                                                                                           |
 | --------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
 | `home/`                               | 相对`$HOME` 的配置树，**复制部署**到 `$HOME` 对应路径                                                |
-| `packages.arch` / `packages.ubuntu` / `packages.darwin` | 依赖包清单，每行一个；`aur:` 前缀 = AUR 包（仅 Arch）；`ext:` 前缀 = 仓库缺失的工具（starship/eza/fastfetch），经官方脚本/GitHub releases 装到 `~/.local` |
+| `packages.arch` / `packages.ubuntu` / `packages.darwin` | 依赖包清单，每行一个；`aur:` 前缀 = AUR 包（仅 Arch）；`ext:` 前缀 = 仓库缺失的工具（starship/eza/fastfetch），经官方脚本/GitHub releases 装到 `~/.local`；`cask:` 前缀 = Homebrew Cask（仅 macOS） |
 | `post_install.sh`                     | 可选钩子（被 source 执行）：克隆第三方插件等                                                                   |
 | `module.conf`                         | `MODULE_DESC`（菜单描述）、`CAPTURE_PATHS`（采集来源 `源\|仓库内路径`）、`CAPTURE_EXCLUDES`（采集排除）、`CAPTURE_STRIP`（行级隔离：sed 删除本机安装器写入的块） |
 | `plugins.txt`                         | 自定义清单（zsh 用：`仓库名\|pin 的 commit`）                                                                 |
@@ -92,6 +93,7 @@ dotfiles/
 - macOS 依赖 Homebrew；安装器不会使用 `sudo` 安装 formula。Apple Silicon 与 Intel 均由 Homebrew 自动选择对应架构。
 - Linux 上 install.sh 会确保 `en_US.UTF-8` locale 已生成（需 sudo 执行 `locale-gen`）；macOS 默认使用系统 UTF-8 locale。否则 oh-my-zsh 的 agnoster 主题用 `$'\ue0b0'` 时会报 "character not in range"。
 - fzf 的 shell 集成（keybind 等）在 fish/zsh 模块内；`modules/fzf` 只负责二进制与配套工具。
+- ghostty 在 Arch 走官方仓库，macOS 走 `brew install --cask`，Ubuntu 26.04+ 走 apt；更早的 Ubuntu（如 22.04）缺少 GTK 4.14+ 依赖，`post_install` 会尝试社区 .deb，失败仅警告，可按提示手动安装。配置部署到 `~/.config/ghostty/config`（`font-family` 需本机已安装 JetBrains Maple Mono），`custom-shader` 使用相对路径，因此 `shaders/` 目录会一并部署。
 
 ## 更新流程
 

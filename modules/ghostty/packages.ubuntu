@@ -1,0 +1,2 @@
+# Ubuntu 26.04+ 官方仓库有 ghostty, 更早版本由 post_install.sh 用社区 .deb 安装
+# 故此处不列包名, 避免旧版 Ubuntu 上 apt 直接失败
